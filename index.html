@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess My Rank - CS2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .score {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 10px 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        /* Main card */
+        .game-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .clip-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Video player */
+        .video-container {
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        video {
+            width: 100%;
+            display: block;
+            background: #000;
+        }
+
+        /* Sliders section */
+        .sliders-section {
+            margin-bottom: 30px;
+        }
+
+        .slider-group {
+            margin-bottom: 35px;
+        }
+
+        .slider-label {
+            font-size: 18px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .slider-preview {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .rank-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #999;
+            overflow: hidden;
+        }
+
+        .rank-image img {
+            width: 50%;
+            height: 50%;
+            object-fit: contain;
+        }
+
+        .rank-image.premier img {
+            width: 70%;
+            height: 70%;
+        }
+
+        .rank-image.premier {
+            width: 120px;
+            height: 80px;
+        }
+
+        .rank-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        /* Custom slider */
+        .slider-container {
+            position: relative;
+            padding: 10px 0;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 8px;
+            background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Button */
+        .validate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .validate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(102, 126, 234, 0.5);
+        }
+
+        .validate-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 12px;
+        }
+
+        .result-item-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #999;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .result-message {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .correct {
+            color: #10b981;
+        }
+
+        .incorrect {
+            color: #ef4444;
+        }
+
+        .result-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .result-btn {
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .game-card {
+                padding: 25px;
+            }
+
+            .clip-title {
+                font-size: 20px;
+            }
+
+            .result-card {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Guess My Rank</h1>
+            <div class="score">Score: <span id="score">0</span></div>
+        </div>
+
+        <!-- Game card -->
+        <div class="game-card">
+            <div class="clip-title" id="clipTitle">Guess my rank</div>
+
+            <!-- Video player -->
+            <div class="video-container">
+                <video id="videoPlayer" controls>
+                    <source id="videoSource" src="" type="video/mp4">
+                    Votre navigateur ne supporte pas la vidéo.
+                </video>
+            </div>
+
+            <!-- Sliders -->
+            <div class="sliders-section">
+                <!-- Faceit slider -->
+                <div class="slider-group">
+                    <label class="slider-label">Rank FACEIT</label>
+                    <div class="slider-preview">
+                        <div class="rank-image" id="faceitImage">?</div>
+                        <div class="rank-name" id="faceitName">Niveau 1</div>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="faceitSlider" min="1" max="10" value="1" step="1">
+                    </div>
+                </div>
+
+                <!-- Premier slider -->
+                <div class="slider-group">
+                    <label class="slider-label">Rank Premier</label>
+                    <div class="slider-preview">
+                        <div class="rank-image premier" id="premierImage">?</div>
+                        <div class="rank-name" id="premierName">1-5k</div>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="premierSlider" min="0" max="5" value="0" step="1">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Validate button -->
+            <button class="validate-btn" id="validateBtn">Valider</button>
+        </div>
+    </div>
+
+    <!-- Result overlay -->
+    <div class="overlay" id="overlay">
+        <div class="result-card">
+            <div class="result-title">Résultats</div>
+
+            <!-- Faceit result -->
+            <div class="result-item">
+                <div class="result-item-title">Faceit</div>
+                <div class="result-content">
+                    <div class="rank-image" id="resultFaceitImage">?</div>
+                    <div class="result-message" id="faceitResult"></div>
+                </div>
+            </div>
+
+            <!-- Premier result -->
+            <div class="result-item">
+                <div class="result-item-title">Premier</div>
+                <div class="result-content">
+                    <div class="rank-image premier" id="resultPremierImage">?</div>
+                    <div class="result-message" id="premierResult"></div>
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="result-buttons">
+                <a class="result-btn btn-secondary" id="faceitLink" href="#" target="_blank">Voir profil Faceit</a>
+                <a class="result-btn btn-secondary" id="steamLink" href="#" target="_blank">Voir profil Steam</a>
+                <button class="result-btn btn-primary" id="nextBtn">Clip suivant</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Premier ranks mapping
+        const premierRanks = [
+            "1-5k",
+            "5-10k",
+            "10-15k",
+            "15-20k",
+            "20-25k",
+            "30k+"
+        ];
+
+        // Premier image names (WITHOUT "premier" prefix, just the number)
+        const premierImageNames = [
+            "1-5",
+            "5-10",
+            "10-15",
+            "15-20",
+            "20-25",
+            "30"
+        ];
+
+        // Game state
+        let clipsData = [];
+        let currentClipIndex = 0;
+        let score = parseInt(localStorage.getItem('guessMyRankScore')) || 0;
+
+        // DOM elements
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoSource = document.getElementById('videoSource');
+        const clipTitle = document.getElementById('clipTitle');
+        const faceitSlider = document.getElementById('faceitSlider');
+        const premierSlider = document.getElementById('premierSlider');
+        const faceitImage = document.getElementById('faceitImage');
+        const premierImage = document.getElementById('premierImage');
+        const faceitName = document.getElementById('faceitName');
+        const premierName = document.getElementById('premierName');
+        const validateBtn = document.getElementById('validateBtn');
+        const overlay = document.getElementById('overlay');
+        const scoreDisplay = document.getElementById('score');
+        const nextBtn = document.getElementById('nextBtn');
+        const resultFaceitImage = document.getElementById('resultFaceitImage');
+        const resultPremierImage = document.getElementById('resultPremierImage');
+        const faceitResult = document.getElementById('faceitResult');
+        const premierResult = document.getElementById('premierResult');
+        const faceitLinkBtn = document.getElementById('faceitLink');
+        const steamLinkBtn = document.getElementById('steamLink');
+
+        // Load all clips from JSON files
+        async function loadAllClips() {
+            const clips = [];
+            let clipNumber = 1;
+            
+            // Try to load clips until we can't find any more
+            while (true) {
+                try {
+                    const response = await fetch(`JSON/clip${clipNumber}.json`);
+                    if (!response.ok) break; // No more clips found
+                    
+                    const clipData = await response.json();
+                    clips.push(clipData);
+                    clipNumber++;
+                } catch (error) {
+                    break; // Stop if there's an error
+                }
+            }
+            
+            if (clips.length === 0) {
+                console.error('No clips found! Make sure JSON files exist in JSON/ folder');
+                alert('Aucun clip trouvé. Vérifiez que les fichiers JSON sont dans le dossier JSON/');
+            }
+            
+            return clips;
+        }
+
+        // Initialize game
+        async function init() {
+            // Load clips from JSON files
+            clipsData = await loadAllClips();
+            
+            if (clipsData.length > 0) {
+                updateScore();
+                loadClip(currentClipIndex);
+                setupEventListeners();
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            faceitSlider.addEventListener('input', updateFaceitPreview);
+            premierSlider.addEventListener('input', updatePremierPreview);
+            validateBtn.addEventListener('click', validateGuess);
+            nextBtn.addEventListener('click', nextClip);
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
+        }
+
+        // Load clip data
+        function loadClip(index) {
+            const clip = clipsData[index];
+            if (!clip) return;
+
+            clipTitle.textContent = `Clip n°${clip.clipNumber}`;
+            videoSource.src = `CLIPS/${clip.clipName}`;
+            videoPlayer.load();
+
+            // Reset sliders
+            faceitSlider.value = 1;
+            premierSlider.value = 0;
+            updateFaceitPreview();
+            updatePremierPreview();
+        }
+
+        // Update Faceit preview
+        function updateFaceitPreview() {
+            const value = faceitSlider.value;
+            faceitName.textContent = `FACEIT ${value}`;
+            faceitImage.innerHTML = `<img src="IMAGES/faceit${value}.png" alt="Faceit ${value}">`;
+        }
+
+        // Update Premier preview
+        function updatePremierPreview() {
+            const value = premierSlider.value;
+            const rankName = premierRanks[value];
+            const imageName = premierImageNames[value];
+            premierName.textContent = rankName;
+            // IMPORTANT: Loading images as "IMAGES/1-5.png", NOT "IMAGES/premier1-5.png"
+            premierImage.innerHTML = `<img src="IMAGES/${imageName}.png" alt="Premier ${rankName}">`;
+        }
+
+        // Validate guess
+        function validateGuess() {
+            const clip = clipsData[currentClipIndex];
+            const faceitGuess = parseInt(faceitSlider.value);
+            const premierGuess = premierRanks[premierSlider.value];
+
+            const faceitCorrect = faceitGuess === clip.faceitRank;
+            const premierCorrect = premierGuess === clip.premierRank;
+
+            // Update score
+            if (faceitCorrect) score++;
+            if (premierCorrect) score++;
+            updateScore();
+
+            // Show results
+            showResults(clip, faceitCorrect, premierCorrect);
+        }
+
+        // Show results overlay
+        function showResults(clip, faceitCorrect, premierCorrect) {
+            // Update Faceit image
+            resultFaceitImage.innerHTML = `<img src="IMAGES/faceit${clip.faceitRank}.png" alt="Faceit ${clip.faceitRank}">`;
+            
+            // Update Premier image - find the correct image name
+            const premierIndex = premierRanks.indexOf(clip.premierRank);
+            const premierImageName = premierImageNames[premierIndex];
+            // IMPORTANT: Loading images as "IMAGES/10-15.png", NOT "IMAGES/premier10-15.png"
+            resultPremierImage.innerHTML = `<img src="IMAGES/${premierImageName}.png" alt="Premier ${clip.premierRank}">`;
+
+            // Update messages
+            if (faceitCorrect) {
+                faceitResult.innerHTML = '<span class="correct">Correct ✅</span>';
+            } else {
+                faceitResult.innerHTML = `<span class="incorrect">Incorrect — bonne réponse : ${clip.faceitRank}</span>`;
+            }
+
+            if (premierCorrect) {
+                premierResult.innerHTML = '<span class="correct">Correct ✅</span>';
+            } else {
+                premierResult.innerHTML = `<span class="incorrect">Incorrect — bonne réponse : ${clip.premierRank}</span>`;
+            }
+
+            // Update links
+            faceitLinkBtn.href = clip.faceitLink;
+            steamLinkBtn.href = clip.steamLink;
+
+            // Update next button
+            if (currentClipIndex >= clipsData.length - 1) {
+                nextBtn.textContent = 'Recommencer';
+            } else {
+                nextBtn.textContent = 'Clip suivant';
+            }
+
+            overlay.classList.add('active');
+        }
+
+        // Next clip
+        function nextClip() {
+            overlay.classList.remove('active');
+            
+            if (currentClipIndex >= clipsData.length - 1) {
+                // Restart game
+                currentClipIndex = 0;
+                score = 0;
+                updateScore();
+            } else {
+                currentClipIndex++;
+            }
+
+            loadClip(currentClipIndex);
+        }
+
+        // Update score display and localStorage
+        function updateScore() {
+            scoreDisplay.textContent = score;
+            localStorage.setItem('guessMyRankScore', score);
+        }
+
+        // Start game
+        init();
+    </script>
+</body>
+</html>
